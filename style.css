@@ -1,0 +1,473 @@
+/* ============================================================
+   Tokens
+   ============================================================ */
+:root {
+  --color-ink: #12161c;
+  --color-paper: #e8eae4;
+  --color-paper-raised: #f2f3ee;
+  --color-steel: #4b5563;
+  --color-steel-light: #8a9099;
+  --color-signal: #c9691f;
+  --color-signal-dim: #c9691f55;
+  --color-line: #c7cbc0;
+  --color-deep: #0b0f14;
+  --color-deep-line: #262d36;
+  --color-on-deep: #e8eae4;
+  --color-on-deep-dim: #8a9099;
+
+  --font-display: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --rail-width: 220px;
+  --content-max: 640px;
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.75rem;
+  --space-4: 3rem;
+  --space-5: 5rem;
+}
+
+/* ============================================================
+   Reset & base
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  margin: 0;
+  color: var(--color-ink);
+}
+
+p { margin: 0 0 var(--space-2); }
+
+a {
+  color: inherit;
+  text-decoration-color: var(--color-signal);
+  text-underline-offset: 3px;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+}
+
+ul { margin: 0; padding-left: 1.1em; }
+li { margin-bottom: 0.35em; }
+
+/* ============================================================
+   Rail navigation — the "patch panel" nav
+   ============================================================ */
+.rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--rail-width);
+  background: var(--color-deep);
+  padding: var(--space-4) 0;
+  z-index: 10;
+}
+
+.rail__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rail__list a {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.rail__list a:hover,
+.rail__list a:focus-visible,
+.rail__list a.is-active {
+  border-left-color: var(--color-signal);
+  background: rgba(201, 105, 31, 0.08);
+}
+
+.rail__num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-signal);
+}
+
+.rail__label {
+  font-size: 0.9rem;
+  color: var(--color-on-deep);
+}
+
+.rail-toggle {
+  display: none;
+}
+
+/* ============================================================
+   Main content
+   ============================================================ */
+main, .footer {
+  margin-left: var(--rail-width);
+  padding: 0 var(--space-4);
+}
+
+.hero {
+  max-width: var(--content-max);
+  padding: var(--space-5) 0 var(--space-4);
+}
+
+.hero__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-steel);
+  margin: 0 0 var(--space-3);
+}
+
+.led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-signal);
+  box-shadow: 0 0 0 3px var(--color-signal-dim);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.hero__name {
+  font-size: clamp(2.6rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  opacity: 0;
+  animation: rise 0.5s ease forwards;
+}
+
+.hero__role {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+  color: var(--color-steel);
+  margin: var(--space-2) 0 var(--space-3);
+  opacity: 0;
+  animation: rise 0.5s ease 0.12s forwards;
+}
+
+.hero__intro {
+  max-width: 52ch;
+  color: var(--color-ink);
+  opacity: 0;
+  animation: rise 0.5s ease 0.24s forwards;
+}
+
+.hero__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  opacity: 0;
+  animation: rise 0.5s ease 0.36s forwards;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__name, .hero__role, .hero__intro, .hero__actions { animation: none; opacity: 1; }
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.7em 1.3em;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid var(--color-ink);
+  border-radius: 2px;
+}
+
+.btn--primary {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.btn--primary:hover { background: var(--color-signal); border-color: var(--color-signal); }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.btn--ghost:hover { border-color: var(--color-signal); color: var(--color-signal); }
+
+/* ============================================================
+   Sections
+   ============================================================ */
+.section {
+  max-width: var(--content-max);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.section__title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  font-size: 1.5rem;
+  margin-bottom: var(--space-3);
+}
+
+.section__num {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-signal);
+}
+
+.section__lead {
+  color: var(--color-steel);
+  max-width: 55ch;
+}
+
+.section__body p { max-width: 62ch; }
+
+/* ============================================================
+   Timeline (experience / education)
+   ============================================================ */
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.timeline__item {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.timeline__item:first-child { border-top: none; padding-top: 0; }
+
+.timeline__period {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-steel);
+}
+
+.timeline__content h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+
+.timeline__company {
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--color-steel);
+}
+
+.timeline__content ul {
+  color: var(--color-steel);
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   Skill ports
+   ============================================================ */
+.ports {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 2px;
+  margin-top: var(--space-3);
+  background: var(--color-line);
+  border: 1px solid var(--color-line);
+}
+
+.port {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  background: var(--color-paper-raised);
+  padding: 0.9em 1em;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-steel-light);
+}
+
+.port__jack {
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--color-steel-light);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.port--lit {
+  color: var(--color-ink);
+}
+
+.port--lit .port__jack {
+  background: var(--color-signal);
+  border-color: var(--color-signal);
+  box-shadow: 0 0 0 3px var(--color-signal-dim);
+}
+
+.traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.traits__item {
+  font-size: 0.85rem;
+  color: var(--color-steel);
+  padding: 0.3em 0.8em;
+  border: 1px solid var(--color-line);
+}
+
+/* ============================================================
+   Footer / contact
+   ============================================================ */
+.footer {
+  background: var(--color-deep);
+  color: var(--color-on-deep);
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.footer__title {
+  color: var(--color-on-deep);
+  font-size: 1.5rem;
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+}
+
+.footer__lead {
+  color: var(--color-on-deep-dim);
+  max-width: 45ch;
+  margin-bottom: var(--space-3);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.footer__links a {
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-deep-line);
+  padding-bottom: 2px;
+  font-size: 0.95rem;
+}
+
+.footer__links a:hover { border-color: var(--color-signal); }
+
+.footer__meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-on-deep-dim);
+  margin: 0;
+}
+
+/* ============================================================
+   Responsive — rail collapses on small screens
+   ============================================================ */
+@media (max-width: 860px) {
+  .rail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: max-height 0.25s ease;
+    z-index: 20;
+  }
+
+  .rail.is-open {
+    max-height: 320px;
+    padding: var(--space-2) 0;
+  }
+
+  .rail__list a { padding: var(--space-2) var(--space-3); }
+
+  .rail-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    position: fixed;
+    top: var(--space-2);
+    right: var(--space-2);
+    z-index: 21;
+    background: var(--color-deep);
+    color: var(--color-on-deep);
+    border: none;
+    padding: 0.6em 1em;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .rail-toggle__port {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  main, .footer {
+    margin-left: 0;
+    padding: 0 var(--space-2);
+  }
+
+  .hero { padding-top: calc(var(--space-5) + var(--space-2)); }
+
+  .timeline__item {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+
+  .footer { padding: var(--space-4) var(--space-2); }
+}
